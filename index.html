@@ -1,0 +1,50 @@
+<!-- 
+    Reading Data from xlsx file using input file and displaying it in dom
+ -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>XLSX CDN Example</title>
+</head>
+<body>
+    <input type="file" onchange="handleChange(this)">
+    <div id="output"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script>
+        var outputdiv = document.getElementById("output");
+        const fileds = { reward:"REWARD", category: "CATEGORY", url: "CMS URL"}
+        var records = [];
+        function handleChange(event) {
+            const file = event.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const data = e.target.result;
+                    const workbook = XLSX.read(data, { type: 'binary' });
+                    
+                    // Assuming the first sheet is the one you want to read
+                    const firstSheet = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheet];
+                    
+                    // Convert worksheet data to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    // displaying in dom
+                    outputdiv.textContent = JSON.stringify(jsonData, null, 2);
+                };
+
+                reader.readAsBinaryString(file);
+            }
+        }
+        
+        function resolvePromises(arr = []) {
+            Promise.all(arr).then(data => {
+                localStorage.setItem("data", JSON.stringify(data));
+            })
+        }
+    </script>
+</body>
+</html>
